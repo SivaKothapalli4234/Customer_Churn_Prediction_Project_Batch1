@@ -9,11 +9,15 @@ import pandas as pd
 import numpy as np
 import joblib
 import json
+from pathlib import Path
 import plotly.graph_objects as go
 import plotly.express as px
 from xgboost import XGBClassifier
 import warnings
 warnings.filterwarnings("ignore")
+
+BASE_DIR = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR / "models"
 
 # ═══════════════════════════════════════════════════════════
 # PAGE CONFIG
@@ -90,22 +94,28 @@ def load_model():
     model = XGBClassifier()
     # Newer xgboost versions may require _estimator_type for sklearn wrapper loading.
     model._estimator_type = "classifier"
-    model.load_model("models/churn_model.json")
+    model_path = MODELS_DIR / "churn_model.json"
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+    try:
+        model.load_model(str(model_path))
+    except Exception as exc:
+        raise RuntimeError(f"Failed to load XGBoost model from {model_path}") from exc
     return model
 
 @st.cache_resource
 def load_artifacts():
-    scaler = joblib.load("models/scaler.pkl")
-    feature_columns = joblib.load("models/feature_columns.pkl")
-    numeric_cols = joblib.load("models/numeric_cols.pkl")
+    scaler = joblib.load(MODELS_DIR / "scaler.pkl")
+    feature_columns = joblib.load(MODELS_DIR / "feature_columns.pkl")
+    numeric_cols = joblib.load(MODELS_DIR / "numeric_cols.pkl")
     
-    with open("models/dataset_stats.json", "r") as f:
+    with open(MODELS_DIR / "dataset_stats.json", "r", encoding="utf-8") as f:
         stats = json.load(f)
     
-    with open("models/model_comparison.json", "r") as f:
+    with open(MODELS_DIR / "model_comparison.json", "r", encoding="utf-8") as f:
         model_comparison = json.load(f)
     
-    with open("models/feature_importance.json", "r") as f:
+    with open(MODELS_DIR / "feature_importance.json", "r", encoding="utf-8") as f:
         feature_importance = json.load(f)
     
     return scaler, feature_columns, numeric_cols, stats, model_comparison, feature_importance
