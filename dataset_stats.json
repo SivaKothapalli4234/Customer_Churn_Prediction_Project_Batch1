@@ -1,0 +1,1 @@
+{"total_customers": 7032, "churn_count": 1869, "no_churn_count": 5163, "churn_rate": 26.58, "avg_tenure": 32.4, "avg_monthly": 64.8, "avg_total": 2283.3, "contract_churn": {"Month-to-month": 0.4271, "One year": 0.1128, "Two year": 0.0285}, "internet_churn": {"DSL": 0.19, "Fiber optic": 0.4189, "No": 0.0743}, "xgb_metrics": {"accuracy": 0.7975, "roc_auc": 0.8423}}
