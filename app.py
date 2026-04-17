@@ -88,6 +88,8 @@ st.markdown("""
 @st.cache_resource
 def load_model():
     model = XGBClassifier()
+    # Newer xgboost versions may require _estimator_type for sklearn wrapper loading.
+    model._estimator_type = "classifier"
     model.load_model("models/churn_model.json")
     return model
 
